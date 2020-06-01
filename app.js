@@ -81,6 +81,8 @@ const UICtrl = (() => {
       };
     },
     addListItem: (item) => {
+      // Show the list
+      document.querySelector(UISelectors.itemList).style.display = "block";
       // Create li element
       const li = document.createElement("li");
       // Add class
@@ -145,10 +147,16 @@ const App = ((ItemCtrl, UICtrl) => {
   // Public methods
   return {
     init: () => {
+      // Fetch items from data structure
       const items = ItemCtrl.getItems();
 
-      //Populate list with items
-      UICtrl.populateItemList(items);
+      // Check if any items
+      if (items.length === 0) {
+        UICtrl.hideList();
+      } else {
+        //Populate list with items
+        UICtrl.populateItemList(items);
+      }
 
       // Load event listeners
       loadEventListerners();
