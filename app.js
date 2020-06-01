@@ -43,6 +43,18 @@ const ItemCtrl = (() => {
 
       return newItem;
     },
+    getTotalCalories: () => {
+      let total = 0;
+      stateData.items.forEach((item) => {
+        total += item.calories;
+      });
+
+      // Set total cal in data structure
+      stateData.totalCalories = total;
+
+      // Return total
+      return stateData.totalCalories;
+    },
     logData: () => {
       return stateData;
     },
@@ -56,6 +68,7 @@ const UICtrl = (() => {
     addBtn: ".add-btn",
     itemNameInput: "#item-name",
     itemCaloriesInput: "#item-calories",
+    totalCalories: ".total-calories",
   };
   // Public Methods
   return {
@@ -106,6 +119,11 @@ const UICtrl = (() => {
     hideList: () => {
       document.querySelector(UISelectors.itemList).style.display = "none";
     },
+    showTotalCalories: (totalCalories) => {
+      document.querySelector(
+        UISelectors.totalCalories
+      ).textContent = totalCalories;
+    },
     getSelectors: () => {
       return UISelectors;
     },
@@ -125,7 +143,7 @@ const App = ((ItemCtrl, UICtrl) => {
       .addEventListener("click", itemAddSubmit);
   };
 
-  // Add Item SUbmit
+  // Add Item Submit
   const itemAddSubmit = (e) => {
     // Get form input from UI controller
     const input = UICtrl.getItemInput();
@@ -136,6 +154,11 @@ const App = ((ItemCtrl, UICtrl) => {
       const newItem = ItemCtrl.addItem(input.name, input.calories);
       // Add item to UI list
       UICtrl.addListItem(newItem);
+
+      // Get total calories
+      const totalCalories = ItemCtrl.getTotalCalories();
+      // add total calories to UI
+      UICtrl.showTotalCalories(totalCalories);
 
       // Clear fields
       UICtrl.clearInput();
@@ -157,6 +180,11 @@ const App = ((ItemCtrl, UICtrl) => {
         //Populate list with items
         UICtrl.populateItemList(items);
       }
+
+      // Get total calories
+      const totalCalories = ItemCtrl.getTotalCalories();
+      // add total calories to UI
+      UICtrl.showTotalCalories(totalCalories);
 
       // Load event listeners
       loadEventListerners();
