@@ -1,4 +1,46 @@
 // Storage controller
+const StorageCtrl = (() => {
+  // public methods
+  return {
+    storeItem: (item) => {
+      let items;
+      // check if any items in ls
+      if (localStorage.getItem("items") === null) {
+        items = [];
+        //push new item
+        items.push(item);
+        // set ls
+        localStorage.setItem("items", JSON.stringify(items));
+      } else {
+        // get current ls
+        items = JSON.parse(localStorage.getItem("items"));
+        // push new item
+        items.push(item);
+        //reset ls
+        localStorage.setItem("items", JSON.stringify(items));
+      }
+    },
+    getItemsFromLocalStorage: () => {
+      let items;
+      if (localStorage.getItem("items") === null) {
+        items = [];
+      } else {
+        items = JSON.parse(localStorage.getItem("items"));
+      }
+      return items;
+    },
+    updateItemLocalStorage: (updatedItem) => {
+      let items = JSON.parse(localStorage.getItem("items"));
+
+      items.forEach((item, index) => {
+        if (updatedItem.id === item.id) {
+          items.splice(index, 1, updatedItem);
+        }
+      });
+      localStorage.setItem("items", JSON.stringify(items));
+    },
+  };
+})();
 
 // Item controller
 const ItemCtrl = (() => {
@@ -10,11 +52,7 @@ const ItemCtrl = (() => {
   };
   // Data Structure / State
   const stateData = {
-    items: [
-      // { id: 0, name: "Steak", calories: 1200 },
-      // { id: 0, name: "Cake", calories: 500 },
-      // { id: 0, name: "Eggs", calories: 300 },
-    ],
+    items: StorageCtrl.getItemsFromLocalStorage(),
     currentItem: null,
     totalCalories: 0,
   };
@@ -233,7 +271,7 @@ const UICtrl = (() => {
 })();
 
 // App controller
-const App = ((ItemCtrl, UICtrl) => {
+const App = ((ItemCtrl, STorageCtrl, UICtrl) => {
   // Load event listeners
   const loadEventListerners = () => {
     // Get UI selectors
@@ -295,6 +333,9 @@ const App = ((ItemCtrl, UICtrl) => {
       // add total calories to UI
       UICtrl.showTotalCalories(totalCalories);
 
+      //store in local storage
+      StorageCtrl.storeItem(newItem);
+
       // Clear fields
       UICtrl.clearInput();
     }
@@ -336,6 +377,9 @@ const App = ((ItemCtrl, UICtrl) => {
     const totalCalories = ItemCtrl.getTotalCalories();
     // add total calories to UI
     UICtrl.showTotalCalories(totalCalories);
+
+    // update local storage
+    StorageCtrl.updateItemLocalStorage(updatedItem);
 
     UICtrl.clearEditState();
     e.preventDefault();
@@ -403,7 +447,7 @@ const App = ((ItemCtrl, UICtrl) => {
       loadEventListerners();
     },
   };
-})(ItemCtrl, UICtrl);
+})(ItemCtrl, StorageCtrl, UICtrl);
 
 // Initialize App
 App.init();
