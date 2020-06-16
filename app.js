@@ -76,6 +76,9 @@ const ItemCtrl = (() => {
       //remove item
       stateData.items.splice(index, 1);
     },
+    clearAllItems: () => {
+      stateData.items = [];
+    },
     setCurrentItem: (item) => {
       stateData.currentItem = item;
     },
@@ -109,6 +112,7 @@ const UICtrl = (() => {
     updateBtn: ".update-btn",
     deleteBtn: ".delete-btn",
     backBtn: ".back-btn",
+    clearBtn: ".clear-btn",
     itemNameInput: "#item-name",
     itemCaloriesInput: "#item-calories",
     totalCalories: ".total-calories",
@@ -191,6 +195,15 @@ const UICtrl = (() => {
       ).value = ItemCtrl.getCurrentItem().calories;
       UICtrl.showEditState();
     },
+    removeItems: () => {
+      let listItems = document.querySelectorAll(UISelectors.listItems);
+      // convert node list to an array
+      listItems = Array.from(listItems);
+      // loop through listItems
+      listItems.forEach((item) => {
+        item.remove();
+      });
+    },
     hideList: () => {
       document.querySelector(UISelectors.itemList).style.display = "none";
     },
@@ -258,6 +271,11 @@ const App = ((ItemCtrl, UICtrl) => {
     document
       .querySelector(UISelectors.deleteBtn)
       .addEventListener("click", itemDeleteSubmit);
+
+    // clear all items event
+    document
+      .querySelector(UISelectors.clearBtn)
+      .addEventListener("click", clearAllItemsClick);
   };
 
   // Add Item Submit
@@ -341,6 +359,22 @@ const App = ((ItemCtrl, UICtrl) => {
     UICtrl.clearEditState();
 
     e.preventDefault();
+  };
+
+  // clear all items event
+  const clearAllItemsClick = () => {
+    // delete all items from data structure
+    ItemCtrl.clearAllItems();
+
+    // Get total calories
+    const totalCalories = ItemCtrl.getTotalCalories();
+    // add total calories to UI
+    UICtrl.showTotalCalories(totalCalories);
+
+    //remove items from ui
+    UICtrl.removeItems();
+    // hide ul
+    UICtrl.hideList();
   };
 
   // Public methods
