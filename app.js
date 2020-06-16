@@ -49,7 +49,7 @@ const StorageCtrl = (() => {
       });
       localStorage.setItem("items", JSON.stringify(items));
     },
-    clearItemsFromStorage: () => {
+    clearItemsFromLocalStorage: () => {
       localStorage.removeItem("items");
     },
   };
@@ -435,6 +435,8 @@ const App = ((ItemCtrl, STorageCtrl, UICtrl) => {
     UICtrl.removeItems();
     // hide ul
     UICtrl.hideList();
+
+    StorageCtrl.clearItemsFromLocalStorage();
   };
 
   // Public methods
