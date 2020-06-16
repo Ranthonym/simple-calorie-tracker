@@ -66,6 +66,16 @@ const ItemCtrl = (() => {
       });
       return found;
     },
+    deleteItem: (id) => {
+      // get all item ids
+      ids = stateData.items.map((item) => {
+        return item.id;
+      });
+      // get index
+      const index = ids.indexOf(id);
+      //remove item
+      stateData.items.splice(index, 1);
+    },
     setCurrentItem: (item) => {
       stateData.currentItem = item;
     },
@@ -163,6 +173,11 @@ const UICtrl = (() => {
         }
       });
     },
+    deleteListItem: (id) => {
+      const itemId = `#item-${id}`;
+      const item = document.querySelector(itemId);
+      item.remove();
+    },
     clearInput: () => {
       document.querySelector(UISelectors.itemNameInput).value = "";
       document.querySelector(UISelectors.itemCaloriesInput).value = "";
@@ -238,6 +253,11 @@ const App = ((ItemCtrl, UICtrl) => {
     document
       .querySelector(UISelectors.backBtn)
       .addEventListener("click", UICtrl.clearEditState);
+
+    // delete item event
+    document
+      .querySelector(UISelectors.deleteBtn)
+      .addEventListener("click", itemDeleteSubmit);
   };
 
   // Add Item Submit
@@ -300,6 +320,26 @@ const App = ((ItemCtrl, UICtrl) => {
     UICtrl.showTotalCalories(totalCalories);
 
     UICtrl.clearEditState();
+    e.preventDefault();
+  };
+
+  // delete item event
+  const itemDeleteSubmit = (e) => {
+    // get current item
+    const currentItem = ItemCtrl.getCurrentItem();
+    //delete from data structure
+    ItemCtrl.deleteItem(currentItem.id);
+
+    // delete item from ui
+    UICtrl.deleteListItem(currentItem.id);
+
+    // Get total calories
+    const totalCalories = ItemCtrl.getTotalCalories();
+    // add total calories to UI
+    UICtrl.showTotalCalories(totalCalories);
+
+    UICtrl.clearEditState();
+
     e.preventDefault();
   };
 
